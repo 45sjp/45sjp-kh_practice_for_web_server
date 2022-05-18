@@ -1,3 +1,4 @@
+<%@ page import="member.model.dto.MemberRole"%>
 <%@ page import="member.model.dto.Member"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
@@ -10,14 +11,19 @@
 		session.removeAttribute("msg");
 	}
 	
+	String saveId = null; // 아이디 저장을 체크한 경우, memberId값이 담길 변수
 	Cookie[] cookies = request.getCookies();
 	if(cookies != null) {
 		for(Cookie cookie : cookies) {
-			System.out.println("Cookie{" + cookie.getName() + "=" + cookie.getValue() + "}");
+			// System.out.println("Cookie{" + cookie.getName() + "=" + cookie.getValue() + "}");
+			
+			if("saveId".equals(cookie.getName())) {
+				saveId = cookie.getValue();
+			}
 		}
 	}
 	else {
-		System.out.println("> 이번 요청에 전달된 cookie가 없습니다.");
+		// System.out.println("> 이번 요청에 전달된 cookie가 없습니다.");
 	}
 %>
 <!DOCTYPE html>
@@ -65,7 +71,7 @@
 					<table>
 						<tr>
 							<!-- tableindex : tab시 focus 순서 지정 -->
-							<td><input type="text" name="memberId" id="memberId" placeholder="아이디" tabindex="1"></td>
+							<td><input type="text" name="memberId" id="memberId" placeholder="아이디" tabindex="1" value="<%= saveId != null ? saveId : "" %>"></td>
 							<td><input type="submit" value="로그인" tabindex="3"></td>
 						</tr>
 						<tr>
@@ -74,9 +80,9 @@
 						</tr>
 						<tr>
 							<td colspan="2">
-								<input type="checkbox" name="saveId" id="saveId" />
+								<input type="checkbox" name="saveId" id="saveId" <%= saveId != null ? "checked" : "" %> />
 								<label for="saveId">아이디저장</label>&nbsp;&nbsp;
-								<input type="button" value="회원가입">
+								<input type="button" value="회원가입" onclick="location.href='<%= request.getContextPath() %>/member/memberEnroll';">
 							</td>
 						</tr>
 					</table>
@@ -105,6 +111,9 @@
 					<li class="home"><a href="<%= request.getContextPath() %>">Home</a></li>
 					<li class="notice"><a href="#">공지사항</a></li>
 					<li class="board"><a href="#">게시판</a></li>
+				<% if(loginMember != null && loginMember.getMemberRole() == MemberRole.A) { %>
+					<li class="admin"><a href="<%= request.getContextPath() %>/admin/memberList">회원관리</a></li>
+				<% } %>
 				</ul>
 			</nav>
 			<!-- 메인메뉴 끝-->					
