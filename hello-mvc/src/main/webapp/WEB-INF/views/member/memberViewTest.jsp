@@ -51,7 +51,7 @@
 -->
 <section id=enroll-container>
 	<h2>회원 정보</h2>
-	<form name="memberUpdateFrm" method="post" action="<%= request.getContextPath() %>/member/memberUpdate">
+	<form name="memberUpdateFrm" method="POST" action="<%= request.getContextPath() %>/member/memberUpdate">
 		<table>
 			<tr>
 				<th>아이디<sup>*</sup></th>
@@ -126,16 +126,9 @@
 			</tr>
 		</table>
         <input type="submit" value="정보수정"/>
-        <input type="button" value="비밀번호수정" onclick="location.href='<%= request.getContextPath() %>/member/passwordUpdate';"/>
         <input type="button" onclick="deleteMember();" value="탈퇴"/>
 	</form>
 </section>
-<!-- 회원탈퇴폼 : POST /member/memberDelete 전송을 위해 시각화되지 않는 폼태그 이용 -->
-<!-- GET : 단순 조회용 / POST : DB 상태 변경용으로 사용 -->
-<form 
-	name="memberDelFrm" action="<%= request.getContextPath() %>/member/memberDelete" method="POST">
-	<input type="hidden" name="memberId" value="<%= loginMember.getMemberId() %>" />
-</form>
 <script>
 	const url = 'https://developer.mozilla.org/en-US/docs/Web/API/HTMLFormElement/submit_event';
 	/* const updateMember = () => {
@@ -159,16 +152,13 @@
 		}
 	};
 	
+	/**
+	 * 회원탈퇴
+	 */
 	const deleteMember = () => {
-		const bool = confirm("회원탈퇴를 계속 진행하시겠습니까?");
-		
-		if(!bool) {
-			alert("회원가입을 취소합니다.");
-			return;
-		}
-		else {
-			document.memberDelFrm.submit();
-		}
+		const title = "memberDeletePopup";
+		const spec = "width=300px, height=200px";
+		const popup = open("<%= request.getContextPath() %>/member/memberDelete", title, spec);
 	};
 </script>
 <%@ include file="/WEB-INF/views/common/footer.jsp" %>
