@@ -49,7 +49,7 @@ public class AdminFilter implements Filter {
 		HttpSession session = httpReq.getSession();
 		Member loginMember = (Member) session.getAttribute("loginMember");
 				
-		if(loginMember == null) {
+		if(loginMember == null || !loginMember.getMemberId().equals("admin")) {
 			session.setAttribute("msg", "관리자만 사용할 수 있습니다.");
 			httpRes.sendRedirect(httpReq.getContextPath() + "/");
 			return; // 조기 리턴
