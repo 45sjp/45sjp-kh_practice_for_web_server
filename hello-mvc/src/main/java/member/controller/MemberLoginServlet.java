@@ -2,14 +2,15 @@ package member.controller;
 
 import java.io.IOException;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import common.HelloMvcUtils;
 import member.model.dto.Member;
 import member.model.service.MemberService;
 
@@ -32,9 +33,11 @@ public class MemberLoginServlet extends HttpServlet {
 		
 		// 2. 사용자 입력값 처리
 		String memberId = request.getParameter("memberId");
-		String password = request.getParameter("password");
+		String password = HelloMvcUtils.encrypt(request.getParameter("password"), memberId);
+		String saveId = request.getParameter("saveId"); // "on" | null
 		System.out.println("memberId@MemberLoginServlet = " + memberId);
 		System.out.println("password@MemberLoginServlet = " + password);
+		System.out.println("saveId@MemberLoginServlet = " + saveId);
 		
 		// 3. 업무 로직
 		Member member = memberService.findByMemberId(memberId);
@@ -51,6 +54,19 @@ public class MemberLoginServlet extends HttpServlet {
 		if(member != null && password.equals(member.getPassword())) {
 			// 로그인 성공!
 			session.setAttribute("loginMember", member);
+			
+			// savaId 쿠키 처리
+			Cookie cookie = new Cookie("saveId", memberId); // name, value
+			cookie.setPath(request.getContextPath()); // /mvc로 시작하는 경로에 이 쿠키를 사용함
+			if(saveId != null) {
+				// max-age 설정이 없다면, 세션 쿠키로 등록. 브라우저 종료시 폐기
+				// max-age 설정이 있다면, 영속 쿠키로 등록. 지정한 시각에 폐기
+				cookie.setMaxAge(7 * 24 * 60 * 60); // 초 단위 : 일주일 후 폐기				
+			}
+			else {
+				cookie.setMaxAge(0); // 0 : 즉시 삭제
+			}
+			response.addCookie(cookie); // 응답 객체에 쿠키 추가. Set-Cookie 헤더에 작성
 		}
 		else {
 			// 로그인 실패!
