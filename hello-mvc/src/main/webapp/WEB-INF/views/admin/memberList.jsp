@@ -4,6 +4,8 @@
 <%@ include file="/WEB-INF/views/common/header.jsp" %>
 <%
 	List<Member> list = (List<Member>) request.getAttribute("list");
+	String pagebar = (String) request.getAttribute("pagebar");
+	
 	String searchType = request.getParameter("searchType"); // member_id member_name gender
 	String searchKeyword = request.getParameter("searchKeyword");
 %>
@@ -98,6 +100,9 @@
 			%>		
 		</tbody>
 	</table>
+	<div id="pagebar">
+		<%= pagebar %>
+	</div>
 </section>
 <form action="<%= request.getContextPath() %>/admin/memberRoleUpdate" name="updateMemberRoleFrm" method="POST">
 	<input type="hidden" name="memberId" />
