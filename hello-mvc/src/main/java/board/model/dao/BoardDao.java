@@ -32,7 +32,7 @@ public class BoardDao {
 	}
 
 	/**
-	 * 게시판 목록 조회
+	 * 게시판 목록 조회 - 페이징 처리
 	 * @param conn
 	 * @param param
 	 * @return
@@ -90,7 +90,7 @@ public class BoardDao {
 	}
 	
 	/**
-	 * 게시판 목록 페이징
+	 * 전체 게시글 수 조회
 	 * @param conn
 	 * @return
 	 */
@@ -107,7 +107,7 @@ public class BoardDao {
 				totalBoardContents = rset.getInt(1);
 			}
 		} catch (Exception e) {
-			throw new BoardException("게시판 목록 페이징 오류", e);
+			throw new BoardException("전체 게시글 수 조회 오류", e);
 		} finally {
 			close(rset);
 			close(pstmt);

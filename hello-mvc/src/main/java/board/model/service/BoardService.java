@@ -17,7 +17,7 @@ public class BoardService {
 	private BoardDao boardDao = new BoardDao();
 
 	/**
-	 * 게시판 목록 조회
+	 * 게시판 목록 조회 - 페이징 처리
 	 * @param param
 	 * @return
 	 */
@@ -29,7 +29,7 @@ public class BoardService {
 	}
 
 	/**
-	 * 게시판 목록 페이징
+	 * 전체 게시글 수 조회
 	 * @return
 	 */
 	public int getTotalBoardContents() {
