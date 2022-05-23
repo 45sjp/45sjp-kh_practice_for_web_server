@@ -39,17 +39,4 @@ public class BoardService {
 		return totalBoardContents;
 	}
 
-// Board, Attachment join 처리!
-//	/**
-//	 * 첨부파일 포함 게시글 목록 조회
-//	 * @param param
-//	 * @return
-//	 */
-//	public List<Attachment> findAllAttachmentList(Map<String, Object> param) {
-//		Connection conn = getConnection();
-//		List<Attachment> AttachmentList = boardDao.findAllAttachmentList(conn, param);
-//		close(conn);
-//		return AttachmentList;
-//	}
-
 }
