@@ -7,9 +7,6 @@
 <%
 	List<Board> boardList = (List<Board>) request.getAttribute("boardList");
 	String pagebar = (String) request.getAttribute("pagebar");
-
-	// Board, Attachment join 처리!
-	// List<Attachment> attachmentList = (List<Attachment>) request.getAttribute("attachmentList");
 %>
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/board.css" />
 <section id="board-container">
