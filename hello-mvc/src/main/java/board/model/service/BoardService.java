@@ -1,7 +1,9 @@
 package board.model.service;
 
 import static common.JdbcTemplate.close;
+import static common.JdbcTemplate.commit;
 import static common.JdbcTemplate.getConnection;
+import static common.JdbcTemplate.rollback;
 
 import java.sql.Connection;
 import java.util.List;
@@ -10,6 +12,7 @@ import java.util.Map;
 import board.model.dao.BoardDao;
 import board.model.dto.Attachment;
 import board.model.dto.Board;
+import board.model.dto.BoardExt;
 
 public class BoardService {
 
@@ -21,9 +24,9 @@ public class BoardService {
 	 * @param param
 	 * @return
 	 */
-	public List<Board> findAllBoardList(Map<String, Object> param) {
+	public List<BoardExt> findAllBoardList(Map<String, Object> param) {
 		Connection conn = getConnection();
-		List<Board> boardList = boardDao.findAllBoardList(conn, param);
+		List<BoardExt> boardList = boardDao.findAllBoardList(conn, param);
 		close(conn);
 		return boardList;
 	}
@@ -37,6 +40,118 @@ public class BoardService {
 		int totalBoardContents = boardDao.getTotalBoardContents(conn);
 		close(conn);
 		return totalBoardContents;
+	}
+	
+	/**
+	 * Transaction
+	 * 	- all or none
+	 * 	- 트랜잭션으로 처리되어야 할 것은 하나의 메소드로 작성되어야 함
+	 * 
+	 * 게시글 등록
+	 * @param board
+	 * @return
+	 */
+	public int insertBoard(Board board) {
+		int result = 0;
+		Connection conn = getConnection();
+		
+		try {
+			// 1. board에 등록
+			result = boardDao.insertBoard(conn, board); // pk no값 결정 : seq_board_no.nextval
+			
+			// 2. board pk 가져오기
+			int no = boardDao.findCurrentBoardNo(conn); // seq_board_no.currval
+			System.out.println("방금 등록된 board.no = " + no);
+			
+			// 3. attachment에 등록
+			List<Attachment> attachments = ((BoardExt) board).getAttachments();
+			if(attachments != null && !attachments.isEmpty()) {
+				for(Attachment attach : attachments) {
+					attach.setBoardNo(no);
+					result = boardDao.insertAttachment(conn, attach);
+				}
+			}
+			
+			commit(conn); // 예외가 발생하지 않으면 전체 commit
+		} catch (Exception e) {
+			rollback(conn); // 예외가 발생하면 전체 rollback
+			throw e;
+		} finally {
+			close(conn);
+		}
+		
+		return result;
+	}
+	
+	/**
+	 * 게시글 상세 조회
+	 * @param no
+	 * @return
+	 */
+	public BoardExt findbyNo(int no) {
+		Connection conn = getConnection();
+		// join해서 처리할 수도 있음
+		BoardExt board = boardDao.findbyNo(conn, no); // board테이블에서 조회
+		List<Attachment> attachments = boardDao.findAttachmentByBoardNo(conn, no); // attachment테이블에서 조회. 0개 이상
+		board.setAttachments(attachments);
+		close(conn);
+		return board;
+	}
+
+	/**
+	 * 조회수 증가
+	 * @param no
+	 * @return
+	 */
+	public int updateReadCount(int no) {
+		int result = 0;
+		Connection conn = getConnection();
+		
+		try {
+			result = boardDao.updateReadCount(conn, no);
+			commit(conn);
+		} catch (Exception e) {
+			rollback(conn);
+			throw e;
+		} finally {
+			close(conn);
+		}
+		
+		return result;
+	}
+
+	/**
+	 * 첨부파일 한 건 조회
+	 * @param no
+	 * @return
+	 */
+	public Attachment findAttachmentByNo(int no) {
+		Connection conn = getConnection();
+		Attachment attach = boardDao.findAttachmentByNo(conn, no);
+		close(conn);
+		return attach;
+	}
+
+	/**
+	 * 게시글 삭제
+	 * @param no
+	 * @return
+	 */
+	public int deleteBoard(int no) {
+		int result = 0;
+		Connection conn = getConnection();
+		
+		try {
+			result = boardDao.deleteBoard(conn, no);
+			commit(conn);
+		} catch (Exception e) {
+			rollback(conn);
+			throw e;
+		} finally {
+			close(conn);
+		}
+		
+		return result;
 	}
 
 }

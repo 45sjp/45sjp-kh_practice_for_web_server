@@ -9,14 +9,12 @@ public class Board {
 	private String content;
 	private int readCount;
 	private Date regDate;
-	private Attachment attachment;
 	
 	public Board() {
 		super();
 	}
 
-	public Board(int no, String title, String memberId, String content, int readCount, Date regDate,
-			Attachment attachment) {
+	public Board(int no, String title, String memberId, String content, int readCount, Date regDate) {
 		super();
 		this.no = no;
 		this.title = title;
@@ -24,7 +22,6 @@ public class Board {
 		this.content = content;
 		this.readCount = readCount;
 		this.regDate = regDate;
-		this.attachment = attachment;
 	}
 
 	public int getNo() {
@@ -75,18 +72,10 @@ public class Board {
 		this.regDate = regDate;
 	}
 
-	public Attachment getAttachment() {
-		return attachment;
-	}
-
-	public void setAttachment(Attachment attachment) {
-		this.attachment = attachment;
-	}
-
 	@Override
 	public String toString() {
 		return "Board [no=" + no + ", title=" + title + ", memberId=" + memberId + ", content=" + content
-				+ ", readCount=" + readCount + ", regDate=" + regDate + ", attachment=" + attachment + "]";
+				+ ", readCount=" + readCount + ", regDate=" + regDate + "]";
 	}
 
 }

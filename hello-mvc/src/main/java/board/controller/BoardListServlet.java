@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import board.model.dto.Board;
+import board.model.dto.BoardExt;
 import board.model.service.BoardService;
 import common.HelloMvcUtils;
 
@@ -46,7 +46,7 @@ public class BoardListServlet extends HttpServlet {
 					
 			// 1. 업무 로직
 			// 2.a. content 영역
-			List<Board> boardList = boardService.findAllBoardList(param);
+			List<BoardExt> boardList = boardService.findAllBoardList(param);
 			System.out.println("boardList = " + boardList);
 
 			// Board, Attachment join 처리!
@@ -67,7 +67,7 @@ public class BoardListServlet extends HttpServlet {
 			request.getRequestDispatcher("/WEB-INF/views/board/boardList.jsp")
 				.forward(request, response);
 		} catch (Exception e) {
-			e.printStackTrace();
+			e.printStackTrace(); // 로깅하기 위함
 			throw e;
 		}
 	}
