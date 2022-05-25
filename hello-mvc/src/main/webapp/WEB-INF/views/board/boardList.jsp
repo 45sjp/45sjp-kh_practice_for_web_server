@@ -1,16 +1,22 @@
 <%@ page import="java.util.List" %>
-<%@ page import="board.model.dto.Board"%>
+<%@ page import="board.model.dto.BoardExt"%>
 <%@ page import="board.model.dto.Attachment"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/views/common/header.jsp" %>
 <%
-	List<Board> boardList = (List<Board>) request.getAttribute("boardList");
+	List<BoardExt> boardList = (List<BoardExt>) request.getAttribute("boardList");
 	String pagebar = (String) request.getAttribute("pagebar");
+
+	// Board, Attachment join 처리!
+	// List<Attachment> attachmentList = (List<Attachment>) request.getAttribute("attachmentList");
 %>
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/board.css" />
 <section id="board-container">
 	<h2>게시판 </h2>
+<% if(loginMember != null) { %> <%-- header.jsp의 loginMember를 가져옴 --%>
+	<input type="button" value="글쓰기" id="btn-add" onclick="location.href='<%= request.getContextPath() %>/board/boardEnroll';" />
+<% } %>
 	<table id="tbl-board">
 		<thead>
 			<tr>
@@ -25,15 +31,17 @@
 		<tbody>
 			<%
 				if(boardList != null && !boardList.isEmpty()) {
-					for(Board board : boardList) {
+					for(BoardExt board : boardList) {
 			%>
 					<tr>
 						<td><%= board.getNo() %></td>
-						<td><%= board.getTitle() %></td>
+						<td>
+							<a href="<%= request.getContextPath() %>/board/boardView?no=<%= board.getNo() %>"><%= board.getTitle() %></a>
+						</td>
 						<td><%= board.getMemberId() %></td>
 						<td><%= board.getRegDate() %></td>
 						<%-- 첨부파일 --%>
-					<% if(board.getAttachment() != null) { %>
+					<% if(board.getAttachCount() > 0) { %>
 						<td>
 							<img src="<%= request.getContextPath() %>/images/file.png" alt="첨부파일 표시 아이콘" />
 						</td>
@@ -50,7 +58,7 @@
 				else {
 			%>
 					<tr>
-						<td colspan="6">조회된 게시글이 없습니다.</td>
+						<td colspan="10">조회된 게시글이 없습니다.</td>
 					</tr>
 			<% 
 				}
