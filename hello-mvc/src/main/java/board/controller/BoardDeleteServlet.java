@@ -27,22 +27,29 @@ public class BoardDeleteServlet extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		try {
+			// 1. 사용자 입력값 처리
 			int no = Integer.parseInt(request.getParameter("no"));
 			
+			// 2. 업무 로직
+			// 첨부파일 존재시 삭제
 			List<Attachment> attachments = boardService.findbyNo(no).getAttachments();
-			String delDirectory = getServletContext().getRealPath("/upload/board");
-			for(Attachment attach : attachments) {
-				File delFilename = new File(delDirectory, attach.getRenamedFilename());
-				if(delFilename.exists()) {
-					delFilename.delete();
+			if(attachments != null && !attachments.isEmpty()) {
+				for(Attachment attach : attachments) {
+					String delDirectory = getServletContext().getRealPath("/upload/board");
+					File delFilename = new File(delDirectory, attach.getRenamedFilename());
+					if(delFilename.exists()) {
+						delFilename.delete();
+						System.out.println("> " + attach.getRenamedFilename() + "파일 삭제!");
+					}
 				}
 			}
 			
+			// board 레코드(행) 삭제 (attachment는 on delete cascade에 의해 자동으로 제거됨)
 			int result = boardService.deleteBoard(no);
 			
+			// 3. redirect : /mvc/board/boardList로 이동
 			HttpSession session = request.getSession();
 			session.setAttribute("msg", "게시물 삭제가 완료되었습니다.");
-			
 			response.sendRedirect(request.getContextPath() + "/board/boardList");
 		} catch (Exception e) {
 			e.printStackTrace();

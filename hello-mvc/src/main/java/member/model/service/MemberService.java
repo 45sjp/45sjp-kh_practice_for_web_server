@@ -18,6 +18,8 @@ import member.model.dto.Member;
  */
 public class MemberService {
 	
+	// 상수는 서비스단에 선언하는 것이 관례
+	public static final int Num_PER_PAGE = 10; // 한 페이지에 표시할 컨텐츠 수
 	private MemberDao memberDao = new MemberDao();
 	
 	/**
@@ -128,11 +130,12 @@ public class MemberService {
 	
 	/**
 	 * 관리자 회원목록 조회
+	 * @param param 
 	 * @return
 	 */
-	public List<Member> findAll() {
+	public List<Member> findAll(Map<String, Object> param) {
 		Connection conn = getConnection();
-		List<Member> list = memberDao.findAll(conn);
+		List<Member> list = memberDao.findAll(conn, param);
 		close(conn);
 		return list;
 	}
@@ -169,6 +172,17 @@ public class MemberService {
 		List<Member> list = memberDao.findBy(conn, param);
 		close(conn);
 		return list;
+	}
+	
+	/**
+	 * 관리자 회원목록 페이징
+	 * @return
+	 */
+	public int getTotalContents() {
+		Connection conn = getConnection();
+		int totalContents = memberDao.getTotalContents(conn);
+		close(conn);
+		return totalContents;
 	}
 
 }

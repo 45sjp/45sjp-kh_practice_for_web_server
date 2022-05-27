@@ -69,6 +69,7 @@ public class BoardViewServlet extends HttpServlet {
 			// board#content 개행 처리
 			// 반드시 XSS공격대비 후에 처리할 것!
 			board.setContent(board.getContent().replaceAll("\n", "<br/>"));
+			System.out.println(board);
 			
 			// 3. view단 위임
 			request.setAttribute("board", board);

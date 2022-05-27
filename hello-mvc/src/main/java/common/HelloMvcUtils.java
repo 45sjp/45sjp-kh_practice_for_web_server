@@ -1,10 +1,18 @@
 package common;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 import java.util.Base64.Encoder;
+
+import javax.servlet.http.HttpServletResponse;
 
 public class HelloMvcUtils {
 	
@@ -81,7 +89,7 @@ public class HelloMvcUtils {
 			pagebar.append("\n");
 		}
 		
-		// 번호
+		// 번호 : pageNo
 		while(pageNo <= pagebarEnd && pageNo <= totalPages) {
 			if(pageNo == cPage) {
 				// 현재 페이지인 경우
@@ -97,7 +105,7 @@ public class HelloMvcUtils {
 		}
 		// 다음 : next
 		if(pageNo > totalPages) {
-			// 다음 페이지가 없는 경우
+			// 다음 페이지가 없는 경우 버튼 비활성화
 		}
 		else {
 			// 다음 페이지가 있는 경우
@@ -106,6 +114,36 @@ public class HelloMvcUtils {
 		}
 		
 		return pagebar.toString();
+	}
+	
+	public static void fileDownload(HttpServletResponse response, String saveDirectory, String originalFilename,
+			String renamedFilename) throws UnsupportedEncodingException, IOException, FileNotFoundException {
+		// 헤더작성 - 메세지 작성보다 먼저 처리되어야 함
+		response.setContentType("application/octet-stream"); // 응답데이터 타입(2진파일. 텍스트 파일 아님)
+		
+		// Content-Disposition : 첨부파일인 경우, 브라우저 다운로드(Save as) 처리 명시
+		// 한글일 경우 파일명 깨지므로 처리해주어야 함!
+		// Content-Disposition: attachment;filename=?? ??.png
+		String resFilename = new String(originalFilename.getBytes("utf-8"), "iso-8859-1"); // tomcat 기본인코딩
+		response.setHeader("Content-Disposition", "attachment;filename=" + resFilename);
+		System.out.println("resFilename = " + resFilename); // resFilename = ì ëª© ìì.png
+		
+		// 파일을 읽어서(input) 응답메세지에 작성(output)
+		File file = new File(saveDirectory, renamedFilename);
+		
+		// 기본스트림 - 대상과 연결
+		// 보조스트림 - 기본스트림 연결. 보조스트림을 제어
+		// try ~ with ~ resource 구문으로 자원반납
+		try (
+			BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file));
+			BufferedOutputStream bos = new BufferedOutputStream(response.getOutputStream());
+		){
+			byte[] buffer = new byte[8192]; // 8kb까지의 내용을 모았다가 전달
+			int len = 0; // 읽어낸 byte 수
+			while((len = bis.read(buffer)) != -1) {
+				bos.write(buffer, 0, len); // buffer의 0번지부터 len(읽은 개수)만큼 출력
+			}
+		}
 	}
 	
 }

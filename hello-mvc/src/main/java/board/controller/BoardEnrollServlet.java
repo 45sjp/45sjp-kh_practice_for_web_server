@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -115,14 +114,8 @@ public class BoardEnrollServlet extends HttpServlet {
 			
 			// 5. 리다이렉트
 			HttpSession session = request.getSession();
-				
-			if (!(result == 1)) {
-				session.setAttribute("msg", msg);
-			} else if (result == 1) {
-				session.setAttribute("msg", msg);
-			}
-			
-			response.sendRedirect(request.getContextPath() + "/board/boardList");
+			session.setAttribute("msg", msg);
+			response.sendRedirect(request.getContextPath() + "/board/boardView?no=" + board.getNo());
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw e;

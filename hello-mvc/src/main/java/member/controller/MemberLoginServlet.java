@@ -74,7 +74,12 @@ public class MemberLoginServlet extends HttpServlet {
 		}
 		
 		// 4. 응답 처리 (jsp 위임)
-		response.sendRedirect(request.getContextPath() + "/");
+		// response.sendRedirect(request.getContextPath() + "/");
+		
+		// 로그인 위치에서 머물게 만드는 방법
+		// String referer = request.getHeader("referer");
+		// response.sendRedirect(referer);
+		response.sendRedirect(request.getHeader("referer"));
 	}
 
 }
