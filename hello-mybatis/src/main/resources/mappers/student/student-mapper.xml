@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="student">
+  <select id="selectOne" parameterType="_int" resultType="student">
+  	select
+  		*
+  	from
+  		student
+  	where
+  		deleted_at is null
+  		and
+  		no = #{no}
+  </select>
+  
+  <!-- <select id="selectOneMap" resultType="map"> -->
+  <select id="selectOneMap" resultMap="studentMap">
+  	select
+  		*
+  	from
+  		student
+  	where
+  		deleted_at is null
+  		and
+  		no = #{no}
+  </select>
+  
+  <!-- 매핑된 컬럼명 변경, 타입 변경 등 설정 -->
+  <!--  column은 대소문자 구분하지 않음. property는 대소문자 구분함 -->
+  <resultMap type="map" id="studentMap">
+  	<id column="NO" property="no"/> <!-- id는 pk컬럼 전용 -->
+  	<result column="NAME" property="name"/>
+  	<result column="TEL" property="tel"/>
+  	<!-- 바꾸지 않는 것은 생략 가능! -->
+  </resultMap>
+  
+  <!-- DML일 경우 resultType속성을 작성하지 않음 -->
+  <insert id="insertStudent" parameterType="student">
+  	insert into
+  		student (no, name, tel)
+  	values
+  		(seq_student_no.nextval, #{name}, #{tel}) <!-- OGNL방식. getName, getTel임! -->
+  </insert>
+  
+  <insert id="insertStudentMap" parameterType="map"> <!-- map은 parameterType이 정해져 있음 -->
+  	insert into
+  		student (no, name, tel)
+  	values
+  		(seq_student_no.nextval, #{name}, #{tel})
+  </insert>
+  
+  <!-- DQL일 경우 resultType속성을 반드시 작성해야 함 -->
+  <select id="getTotalCount" resultType="_int">
+  	select
+  		count(*)
+  	from
+  		student
+  	where
+  		deleted_at is null
+  </select>
+  
+  <update id="updateStudent" parameterType="student">
+  	update
+  		student
+  	set
+  		name = #{name}, tel = #{tel}, updated_at = sysdate
+  	where
+  		deleted_at is null
+  		and
+  		no = #{no}
+  </update>
+  
+  <update id="deleteStudent" parameterType="_int">
+  	update
+  		student
+  	set
+  		deleted_at = sysdate
+  	where
+  		no = #{no}
+  </update>
+</mapper>
